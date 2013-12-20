@@ -108,12 +108,14 @@ module Fluent
 
         @last_error = {}
 
-        begin
-          connect!
-        rescue => e
-          set_last_error(e)
-          @logger.error "Failed to connect fluentd: #{$!}"
-          @logger.error "Connection will be retried."
+        if !options[:lazy_connect]
+          begin
+            connect!
+          rescue => e
+            set_last_error(e)
+            @logger.error "Failed to connect fluentd: #{$!}"
+            @logger.error "Connection will be retried."
+          end
         end
 
         at_exit { close }
